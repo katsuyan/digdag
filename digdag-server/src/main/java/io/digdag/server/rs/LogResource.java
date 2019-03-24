@@ -25,6 +25,8 @@ import io.digdag.client.api.*;
 import io.digdag.spi.*;
 import io.swagger.annotations.Api;
 
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
+
 import static io.digdag.core.log.LogServerManager.logFilePrefixFromSessionAttempt;
 
 @Api("Log")
@@ -112,6 +114,10 @@ public class LogResource
             throws ResourceNotFoundException
     {
         return tm.begin(() -> {
+            Logger logger = LoggerFactory.getLogger(LogResource.class);
+            logger.warn("-------");
+            logger.warn(taskName);
+
             LogFilePrefix prefix = getPrefix(attemptId);
             List<LogFileHandle> handles = logServer.getFileHandles(prefix, Optional.fromNullable(taskName));
             return RestModels.logFileHandleCollection(handles);
