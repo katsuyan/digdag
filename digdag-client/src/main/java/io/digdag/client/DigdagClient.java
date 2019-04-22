@@ -44,6 +44,8 @@ import io.digdag.client.api.SecretValidation;
 import io.digdag.client.api.SessionTimeTruncate;
 import io.digdag.client.config.Config;
 import io.digdag.client.config.ConfigFactory;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
@@ -633,10 +635,14 @@ public class DigdagClient implements AutoCloseable
 
     public RestLogFileHandleCollection getLogFileHandlesOfTask(Id attemptId, String taskName)
     {
-        return doGet(RestLogFileHandleCollection.class,
-                target("/api/logs/{id}/files")
-                .resolveTemplate("id", attemptId)
-                .queryParam("task", taskName));
+        try {
+            return doGet(RestLogFileHandleCollection.class,
+                    target("/api/logs/{id}/files")
+                    .resolveTemplate("id", attemptId)
+                    .queryParam("task", URLEncoder.encode(taskName, "UTF-8")));
+        } catch (UnsupportedEncodingException ex) {
+            throw Throwables.propagate(ex);
+        }
     }
 
     public InputStream getLogFile(Id attemptId, RestLogFileHandle handle)

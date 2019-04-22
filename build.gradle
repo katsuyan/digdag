@@ -12,7 +12,7 @@ apply plugin: 'maven'
 
 allprojects {
     group = 'io.digdag'
-    version = '0.9.36-SNAPSHOT'
+    version = '0.9.37-SNAPSHOT'
 
     ext {
         isSnapshotRelease = version.endsWith('-SNAPSHOT')
@@ -322,7 +322,8 @@ project(':digdag-ui') {
 
         doFirst {
             exec {
-                commandLine System.env.NPM ?: "npm", "install"
+                // npm ci requires npm version 5.7 or more.
+                commandLine System.env.NPM ?: "npm", "ci"
             }
             exec {
                 commandLine System.env.NPM ?: "npm", "run", "build"

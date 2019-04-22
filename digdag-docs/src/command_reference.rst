@@ -235,7 +235,7 @@ Updates the executable binary file to the latest version or specified version. E
 .. code-block:: console
 
     $ digdag selfupdate
-    $ digdag selfupdate 0.9.35
+    $ digdag selfupdate 0.9.36
 
 Server-mode commands
 ----------------------------------
@@ -356,6 +356,8 @@ In the config file, following parameters are available
 * database.idleTimeout (seconds in integer, default: 600)
 * database.validationTimeout (seconds in integer, default: 5)
 * database.maximumPoolSize (integer, default: available CPU cores * 32)
+* database.leakDetectionThreshold (HikariCP leakDetectionThreshold milliseconds in integer. default: 0. To enable, set to >= 2000.)
+* database.migrate (enable DB migration. default: true)
 * archive.type (type of project archiving, "db" or "s3". default: "db")
 * archive.s3.endpoint (string. default: "s3.amazonaws.com")
 * archive.s3.bucket (string)
@@ -538,6 +540,20 @@ Kills a session attempt. Examples:
 
     $ digdag kill 32
 
+
+projects
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: console
+
+    $ digdag projects [name]
+
+Shows list of projects or details of a project. Examples:
+
+.. code-block:: console
+
+    $ digdag projects
+    $ digdag projects myproj
 
 workflows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
