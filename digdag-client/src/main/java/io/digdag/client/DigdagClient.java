@@ -633,10 +633,14 @@ public class DigdagClient implements AutoCloseable
 
     public RestLogFileHandleCollection getLogFileHandlesOfTask(Id attemptId, String taskName)
     {
-        return doGet(RestLogFileHandleCollection.class,
-                target("/api/logs/{id}/files")
-                .resolveTemplate("id", attemptId)
-                .queryParam("task", taskName));
+        try {
+            return doGet(RestLogFileHandleCollection.class,
+                    target("/api/logs/{id}/files")
+                    .resolveTemplate("id", attemptId)
+                    .queryParam("task", URLEncoder.encode(taskName, "UTF-8")));
+        } catch (UnsupportedEncodingException ex) {
+            throw Throwables.propagate(ex);
+        }
     }
 
     public InputStream getLogFile(Id attemptId, RestLogFileHandle handle)
