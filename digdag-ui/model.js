@@ -443,7 +443,7 @@ export class Model {
     return this.http(url, 'POST')
   }
 
-  http (url: string, method: MethodType): Promise<*> {
+  http (url: string, method: MethodType): Promise<*> { // url: workflows method: POST
     return fetch(this.config.url + url, {
       credentials: 'include',
       method,
