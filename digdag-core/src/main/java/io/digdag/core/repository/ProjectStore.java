@@ -7,7 +7,7 @@ import com.google.common.base.Optional;
 
 public interface ProjectStore
 {
-    List<StoredProject> getProjects(int pageSize, Optional<Integer> lastId);
+    List<StoredProject> getProjects(int pageSize, Optional<Integer> lastId, String orderby);
 
     ProjectMap getProjectsByIdList(List<Integer> projIdList);
 
