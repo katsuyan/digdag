@@ -79,7 +79,7 @@ public class ShowWorkflow
             ln("%s", yaml);
         }
         else {
-            for (RestProject proj : client.getProjects().getProjects()) {
+            for (RestProject proj : client.getProjects("id").getProjects()) {
                 try {
                     RestWorkflowDefinition def = client.getWorkflowDefinition(proj.getId(), defName);
                     String yaml = yamlMapper().toYaml(def.getConfig());

@@ -243,7 +243,9 @@ public class ProjectResource
 
     @GET
     @Path("/api/projects")
-    public RestProjectCollection getProjects(@QueryParam("name") String name)
+    public RestProjectCollection getProjects(
+        @QueryParam("name") String name,
+        @QueryParam("sort") List<String> sortKeys)
     {
         return tm.begin(() -> {
             ProjectStore ps = rm.getProjectStore(getSiteId());
@@ -261,7 +263,7 @@ public class ProjectResource
             }
             else {
                 // TODO fix n-m db access
-                collection = ps.getProjects(100, Optional.absent())
+                collection = ps.getProjects(100, Optional.absent(), sortKeys)
                         .stream()
                         .map(proj -> {
                             try {

@@ -33,6 +33,8 @@ import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
+import org.skife.jdbi.v2.sqlobject.customizers.Define;
+import org.skife.jdbi.v2.sqlobject.stringtemplate.UseStringTemplate3StatementLocator;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 
 import javax.activation.DataSource;
@@ -124,9 +126,10 @@ public class DatabaseProjectStoreManager
         //}
 
         @Override
-        public List<StoredProject> getProjects(int pageSize, Optional<Integer> lastId)
+        public List<StoredProject> getProjects(int pageSize, Optional<Integer> lastId, List<String> sortKeys)
         {
-            return autoCommit((handle, dao) -> dao.getProjects(siteId, pageSize, lastId.or(0)));
+            String orderBy = String.join(",", sortKeys);
+            return autoCommit((handle, dao) -> dao.getProjects(siteId, pageSize, lastId.or(0), orderBy));
         }
 
         @Override
@@ -505,6 +508,7 @@ public class DatabaseProjectStoreManager
         }
     }
 
+    @UseStringTemplate3StatementLocator
     public interface H2Dao
             extends Dao
     {
@@ -539,6 +543,7 @@ public class DatabaseProjectStoreManager
         List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(@Bind("siteId") int siteId, @Bind("limit") int limit, @Bind("lastId") long lastId);
     }
 
+    @UseStringTemplate3StatementLocator
     public interface PgDao
             extends Dao
     {
@@ -578,15 +583,16 @@ public class DatabaseProjectStoreManager
         List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(@Bind("siteId") int siteId, @Bind("limit") int limit, @Bind("lastId") long lastId);
     }
 
+    @UseStringTemplate3StatementLocator
     public interface Dao
     {
         @SqlQuery("select * from projects" +
                 " where site_id = :siteId" +
                 " and name is not null" +
                 " and id > :lastId" +
-                " order by id asc" +
+                " order by <orderBy> asc" +
                 " limit :limit")
-        List<StoredProject> getProjects(@Bind("siteId") int siteId, @Bind("limit") int limit, @Bind("lastId") int lastId);
+        List<StoredProject> getProjects(@Bind("siteId") int siteId, @Bind("limit") int limit, @Bind("lastId") int lastId, @Define("orderBy") String orderBy);
 
         @SqlUpdate("update projects" +
                 " set deleted_name = name, deleted_at = now(), name = NULL" +

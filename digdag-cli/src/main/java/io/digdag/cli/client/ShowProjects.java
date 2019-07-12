@@ -1,5 +1,6 @@
 package io.digdag.cli.client;
 
+import com.beust.jcommander.Parameter;
 import io.digdag.cli.SystemExitException;
 import io.digdag.cli.TimeUtil;
 import io.digdag.client.DigdagClient;
@@ -13,6 +14,9 @@ import static io.digdag.cli.SystemExitException.systemExit;
 public class ShowProjects
         extends ClientCommand
 {
+    @Parameter(names = { "-s", "--sort" })
+    String sort = "id";
+
     @Override
     public void mainWithClientException()
             throws Exception
@@ -34,7 +38,7 @@ public class ShowProjects
     {
         DigdagClient client = buildClient();
 
-        RestProjectCollection projects = client.getProjects();
+        RestProjectCollection projects = client.getProjects(sort);
         ln("Projects");
         for (RestProject project : projects.getProjects()) {
             showProjectDetail(project);

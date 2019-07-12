@@ -290,10 +290,11 @@ public class DigdagClient implements AutoCloseable
         }
     }
 
-    public RestProjectCollection getProjects()
+    public RestProjectCollection getProjects(String sortKey)
     {
         return doGet(RestProjectCollection.class,
-                target("/api/projects"));
+                target("/api/projects")
+                .queryParam("sort", sortKey));
     }
 
     public RestProject getProject(Id projId)
