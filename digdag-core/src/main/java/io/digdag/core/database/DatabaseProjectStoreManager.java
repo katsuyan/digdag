@@ -271,10 +271,10 @@ public class DatabaseProjectStoreManager
         }
 
         @Override
-        public List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(int pageSize, Optional<Long> lastId)
+        public List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(int pageSize, Optional<Long> lastId, String sortProjects, String sortWorkflows)
             throws ResourceNotFoundException
         {
-            return autoCommit((handle, dao) -> dao.getLatestActiveWorkflowDefinitions(siteId, pageSize, lastId.or(0L)));
+            return autoCommit((handle, dao) -> dao.getLatestActiveWorkflowDefinitions(siteId, pageSize, lastId.or(0L), sortProjects, sortWorkflows));
         }
 
         @Override
@@ -537,9 +537,9 @@ public class DatabaseProjectStoreManager
                 " join projects proj on a.project_id = proj.id" +
                 " join workflow_configs wc on wc.id = wd.config_id" +
                 " where wd.id > :lastId" +
-                " order by proj.name, wd.name" +
+                " order by proj.<sortProjects>, wd.<sortWorkflows>" +
                 " limit :limit")
-        List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(@Bind("siteId") int siteId, @Bind("limit") int limit, @Bind("lastId") long lastId);
+        List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(@Bind("siteId") int siteId, @Bind("limit") int limit, @Bind("lastId") long lastId, @Define("sortProjects") String sortProjects, @Define("sortWorkflows") String sortWorkflows);
     }
 
     @UseStringTemplate3StatementLocator
@@ -578,8 +578,8 @@ public class DatabaseProjectStoreManager
                 " join revisions rev on rev.id = wd.revision_id" +
                 " join projects proj on proj.id = rev.project_id" +
                 " join workflow_configs wc on wc.id = wd.config_id" +
-                " order by proj.name, wd.name")
-        List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(@Bind("siteId") int siteId, @Bind("limit") int limit, @Bind("lastId") long lastId);
+                " order by proj.<sortProjects>, wd.<sortWorkflows>")
+        List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(@Bind("siteId") int siteId, @Bind("limit") int limit, @Bind("lastId") long lastId, @Define("sortProjects") String sortProjects, @Define("sortWorkflows") String sortWorkflows);
     }
 
     @UseStringTemplate3StatementLocator
@@ -678,7 +678,7 @@ public class DatabaseProjectStoreManager
                 " limit 1")
         StoredWorkflowDefinitionWithProject getLatestWorkflowDefinitionByName(@Bind("siteId") int siteId, @Bind("projId") int projId, @Bind("name") String name);
 
-        List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(int siteId, int limit, long lastId);
+        List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(int siteId, int limit, long lastId, String sortProjects, String sortWorkflows);
 
         // getWorkflowDetailsById is same with getWorkflowDetailsByIdInternal
         // excepting site_id check

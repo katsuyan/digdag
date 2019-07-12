@@ -143,10 +143,10 @@ public class Start
 
         RestWorkflowDefinition def;
         if (revision == null) {
-            def = client.getWorkflowDefinition(proj.getId(), workflowName);
+            def = client.getWorkflowDefinition(proj.getId(), workflowName, "id", "id");
         }
         else {
-            def = client.getWorkflowDefinition(proj.getId(), workflowName, revision);
+            def = client.getWorkflowDefinition(proj.getId(), workflowName, revision, "id", "id");
         }
 
         RestWorkflowSessionTime truncatedTime = client.getWorkflowTruncatedSessionTime(def.getId(), time, mode);

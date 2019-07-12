@@ -114,13 +114,13 @@ public class Retry
         else if (latestRevision) {
             // get the latest workflow with the same name in the same project
             RestWorkflowDefinition def = client.getWorkflowDefinition(
-                    attempt.getProject().getId(), attempt.getWorkflow().getName());
+                    attempt.getProject().getId(), attempt.getWorkflow().getName(), "id", "id");
             workflowId = def.getId();
         }
         else {
             // get workflow in a specific revision with the same name in the same project
             RestWorkflowDefinition def = client.getWorkflowDefinition(
-                    attempt.getProject().getId(), attempt.getWorkflow().getName(), revision);
+                    attempt.getProject().getId(), attempt.getWorkflow().getName(), revision, "id", "id");
             workflowId = def.getId();
         }
 

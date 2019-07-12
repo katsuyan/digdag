@@ -62,7 +62,7 @@ public interface ProjectStore
     StoredWorkflowDefinitionWithProject getLatestWorkflowDefinitionByName(int projId, String name)
         throws ResourceNotFoundException;
 
-    List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(int pageSize, Optional<Long> lastId)
+    List<StoredWorkflowDefinitionWithProject> getLatestActiveWorkflowDefinitions(int pageSize, Optional<Long> lastId, String sortProjects, String sortWorkflows)
         throws ResourceNotFoundException;
 
     TimeZoneMap getWorkflowTimeZonesByIdList(List<Long> defIdList);

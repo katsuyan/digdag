@@ -1,5 +1,6 @@
 package io.digdag.cli.client;
 
+import com.beust.jcommander.Parameter;
 import io.digdag.cli.SystemExitException;
 import io.digdag.client.DigdagClient;
 import io.digdag.client.api.RestProject;
@@ -14,6 +15,12 @@ import static io.digdag.cli.SystemExitException.systemExit;
 public class ShowWorkflow
     extends ClientCommand
 {
+    @Parameter(names = { "-sp", "--sortProjects" })
+    String sortProjects = "id";
+
+    @Parameter(names = { "-sw", "--sortWorkflws" })
+    String sortWorkflows = "id";
+
     @Override
     public void mainWithClientException()
         throws Exception
@@ -48,12 +55,12 @@ public class ShowWorkflow
         if (projName != null) {
             RestProject proj = client.getProject(projName);
             ln("  %s", proj.getName());
-            for (RestWorkflowDefinition def : client.getWorkflowDefinitions(proj.getId()).getWorkflows()) {
+            for (RestWorkflowDefinition def : client.getWorkflowDefinitions(proj.getId(), sortProjects, sortWorkflows).getWorkflows()) {
                 ln("    %s", def.getName());
             }
         }
         else {
-            List<RestWorkflowDefinition> defs = client.getWorkflowDefinitions().getWorkflows();
+            List<RestWorkflowDefinition> defs = client.getWorkflowDefinitions(sortProjects, sortWorkflows).getWorkflows();
             String lastProjName = null;
             for (RestWorkflowDefinition def : defs) {
                 if (!def.getProject().getName().equals(lastProjName)) {
@@ -74,14 +81,16 @@ public class ShowWorkflow
 
         if (projName != null) {
             RestProject proj = client.getProject(projName);
-            RestWorkflowDefinition def = client.getWorkflowDefinition(proj.getId(), defName);
+            RestWorkflowDefinition def = client.getWorkflowDefinition(proj.getId(), defName, sortProjects,
+                    sortWorkflows);
             String yaml = yamlMapper().toYaml(def.getConfig());
             ln("%s", yaml);
         }
         else {
             for (RestProject proj : client.getProjects("id").getProjects()) {
                 try {
-                    RestWorkflowDefinition def = client.getWorkflowDefinition(proj.getId(), defName);
+                    RestWorkflowDefinition def = client.getWorkflowDefinition(proj.getId(), defName, sortProjects,
+                            sortWorkflows);
                     String yaml = yamlMapper().toYaml(def.getConfig());
                     ln("%s", yaml);
                     return;

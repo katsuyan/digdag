@@ -318,40 +318,44 @@ public class DigdagClient implements AutoCloseable
                 .queryParam("last_id", lastId.orNull()));
     }
 
-    public RestWorkflowDefinitionCollection getWorkflowDefinitions()
+    public RestWorkflowDefinitionCollection getWorkflowDefinitions(String sortProjects, String sortWorkflows)
     {
         return doGet(RestWorkflowDefinitionCollection.class,
-                target("/api/workflows"));
+                target("/api/workflows").queryParam("sortProjects", sortProjects).queryParam("sortWorkflows", sortWorkflows));
     }
 
-    public RestWorkflowDefinitionCollection getWorkflowDefinitions(Optional<Id> lastId)
+    public RestWorkflowDefinitionCollection getWorkflowDefinitions(Optional<Id> lastId, String sortProjects, String sortWorkflows)
     {
         return doGet(RestWorkflowDefinitionCollection.class,
                 target("/api/workflows")
-                .queryParam("last_id", lastId.orNull()));
+                .queryParam("last_id", lastId.orNull()).queryParam("sortProjects", sortProjects)
+                        .queryParam("sortWorkflows", sortWorkflows));
     }
 
-    public RestWorkflowDefinitionCollection getWorkflowDefinitions(Id projId)
+    public RestWorkflowDefinitionCollection getWorkflowDefinitions(Id projId, String sortProjects, String sortWorkflows)
     {
         return doGet(RestWorkflowDefinitionCollection.class,
                 target("/api/projects/{id}/workflows")
-                .resolveTemplate("id", projId));
+                .resolveTemplate("id", projId).queryParam("sortProjects", sortProjects)
+                        .queryParam("sortWorkflows", sortWorkflows));
     }
 
-    public RestWorkflowDefinitionCollection getWorkflowDefinitions(Id projId, String revision)
+    public RestWorkflowDefinitionCollection getWorkflowDefinitions(Id projId, String revision, String sortProjects, String sortWorkflows)
     {
         return doGet(RestWorkflowDefinitionCollection.class,
                 target("/api/projects/{id}/workflows")
                 .resolveTemplate("id", projId)
-                .queryParam("revision", revision));
+                .queryParam("revision", revision).queryParam("sortProjects", sortProjects)
+                        .queryParam("sortWorkflows", sortWorkflows));
     }
 
-    public RestWorkflowDefinition getWorkflowDefinition(Id projId, String name)
+    public RestWorkflowDefinition getWorkflowDefinition(Id projId, String name, String sortProjects, String sortWorkflows)
     {
         List<RestWorkflowDefinition> defs = doGet(RestWorkflowDefinitionCollection.class,
                 target("/api/projects/{id}/workflows")
                 .resolveTemplate("id", projId)
-                .queryParam("name", name))
+                .queryParam("name", name).queryParam("sortProjects", sortProjects)
+                        .queryParam("sortWorkflows", sortWorkflows))
             .getWorkflows();
         if (defs.isEmpty()) {
             throw new NotFoundException(String.format(ENGLISH,
@@ -363,13 +367,14 @@ public class DigdagClient implements AutoCloseable
         }
     }
 
-    public RestWorkflowDefinition getWorkflowDefinition(Id projId, String name, String revision)
+    public RestWorkflowDefinition getWorkflowDefinition(Id projId, String name, String revision, String sortProjects, String sortWorkflows)
     {
         List<RestWorkflowDefinition> defs = doGet(RestWorkflowDefinitionCollection.class,
                 target("/api/projects/{id}/workflows")
                 .resolveTemplate("id", projId)
                 .queryParam("name", name)
-                .queryParam("revision", revision))
+                .queryParam("revision", revision).queryParam("sortProjects", sortProjects)
+                        .queryParam("sortWorkflows", sortWorkflows))
             .getWorkflows();
         if (defs.isEmpty()) {
             throw new NotFoundException(String.format(ENGLISH,
