@@ -73,6 +73,7 @@ import io.digdag.core.repository.ResourceNotFoundException;
 import io.digdag.core.repository.Revision;
 import io.digdag.core.repository.StoredProject;
 import io.digdag.core.repository.StoredRevision;
+import io.digdag.core.repository.StoredRevisionWithProject;
 import io.digdag.core.repository.StoredWorkflowDefinition;
 import io.digdag.core.repository.WorkflowDefinition;
 import io.digdag.core.repository.WorkflowDefinitionList;
@@ -262,20 +263,8 @@ public class ProjectResource
                 }
             }
             else {
-                // TODO fix n-m db access
-                collection = ps.getProjects(100, Optional.absent(), sortKeys)
-                        .stream()
-                        .map(proj -> {
-                            try {
-                                StoredRevision rev = ps.getLatestRevision(proj.getId());
-                                return RestModels.project(proj, rev);
-                            }
-                            catch (ResourceNotFoundException ex) {
-                                return null;
-                            }
-                        })
-                        .filter(proj -> proj != null)
-                        .collect(Collectors.toList());
+                StoredRevisionWithProject revWithProj = ps.getRevisionsWithProject(100, Optional.absent(), sortKeys);
+                collection = ImmutableList.of(RestModels.project(revWithProj));
             }
 
             return RestModels.projectCollection(collection);

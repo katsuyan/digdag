@@ -19,6 +19,7 @@ import io.digdag.core.repository.ResourceNotFoundException;
 import io.digdag.core.repository.Revision;
 import io.digdag.core.repository.StoredProject;
 import io.digdag.core.repository.StoredRevision;
+import io.digdag.core.repository.StoredRevisionWithProject;
 import io.digdag.core.repository.StoredWorkflowDefinition;
 import io.digdag.core.repository.StoredWorkflowDefinitionWithProject;
 import io.digdag.core.repository.TimeZoneMap;
@@ -251,6 +252,13 @@ public class DatabaseProjectStoreManager
         public List<StoredRevision> getRevisions(int projId, int pageSize, Optional<Integer> lastId)
         {
             return autoCommit((handle, dao) -> dao.getRevisions(siteId, projId, pageSize, lastId.or(Integer.MAX_VALUE)));
+        }
+
+        @Override
+        public List<StoredRevisionWithProject> getRevisionsWithProjects(int pageSize, Optional<Integer> lastId, List<String> sortKeys)
+        {
+            String orderBy = String.join(",", sortKeys);
+            return autoCommit((handle, dao) -> dao.getRevisionsWithProjects(siteId, pageSize, lastId.or(0), orderBy));
         }
 
         @Override
@@ -658,6 +666,11 @@ public class DatabaseProjectStoreManager
                 " order by rev.id desc" +
                 " limit :limit")
         List<StoredRevision> getRevisions(@Bind("siteId") int siteId, @Bind("projId") int projId, @Bind("limit") int limit, @Bind("lastId") int lastId);
+
+        @SqlQuery("select rev.* from revisions rev" + " join projects proj on proj.id = rev.project_id"
+                + " where site_id = :siteId" + " and rev.project_id = :projId" + " and rev.id < :lastId"
+                + " order by rev.id desc" + " limit :limit")
+        List<StoredRevisionWithProject> getRevisionsWithProjects(@Bind("siteId") int siteId, @Bind("limit") int limit, @Bind("lastId") int lastId, @Define("orderBy") String orderBy);
 
         @SqlQuery("select archive_data from revision_archives" +
                 " where id = :revId")

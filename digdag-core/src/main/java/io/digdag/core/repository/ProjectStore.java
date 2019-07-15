@@ -47,6 +47,8 @@ public interface ProjectStore
 
     List<StoredRevision> getRevisions(int projId, int pageSize, Optional<Integer> lastId);
 
+    List<StoredRevisionWithProject> getRevisionsWithProjects(int pageSize, Optional<Integer> lastId, List<String> sortKeys);
+
     byte[] getRevisionArchiveData(int revId)
             throws ResourceNotFoundException;
 
