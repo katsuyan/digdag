@@ -307,13 +307,38 @@ class ProjectListView extends React.Component {
   }
 }
 
+function sortWorkflow (workflows: Array<Workflow>): Array<Workflow> {
+  workflows.sort(function (a, b) {
+    var projectNameA = a.project.name.toUpperCase();
+    var projectNameB = b.project.name.toUpperCase();
+    var workflowNameA = a.name.toUpperCase();
+    var workflowNameB = b.name.toUpperCase();
+
+    if (projectNameA < projectNameB) {
+      return -1;
+    }
+    if (projectNameA > projectNameB) {
+      return 1;
+    }
+    if (workflowNameA < workflowNameB) {
+      return -1;
+    }
+    if (workflowNameA > workflowNameB) {
+      return 1;
+    }
+    return 0;
+  })
+
+  return workflows
+}
+
 class WorkflowListView extends React.Component {
   props:{
     workflows: Array<Workflow>;
   };
 
   render () {
-    const rows = this.props.workflows.map(workflow =>
+    const rows = sortWorkflow(this.props.workflows).map(workflow =>
       <tr key={workflow.id}>
         <td><Link
           to={`/projects/${workflow.project.id}/workflows/${encodeURIComponent(workflow.name)}`}>{workflow.name}</Link>
